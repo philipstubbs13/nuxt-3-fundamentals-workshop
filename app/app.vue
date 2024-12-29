@@ -1,28 +1,23 @@
-<script>
-import { defineNuxtComponent } from '#app'
+<script setup>
+import { ref, computed } from "vue";
 
-export default defineNuxtComponent({
-  data: () => ({
-    todoList: []
-  }),
-  computed: {
-    completedItems() {
-      return this.todoList.filter(item => item.completed)
-    },
-    remainingItems() {
-      return this.todoList.filter(item => !item.completed)
-    }
-  },
-  methods: {
-    fetchTodoList() {
-      fetch('https://jsonplaceholder.typicode.com/todos/')
-        .then(response => response.json())
-        .then(json => {
-          this.todoList = json
-        })
-    }
-  }
-})
+const todoList = ref([]);
+
+const completedItems = computed(() => {
+  return todoList.value.filter((item) => item.completed);
+});
+
+const remainingItems = computed(() => {
+  return todoList.value.filter((item) => !item.completed);
+});
+
+function fetchTodoList() {
+  fetch("https://jsonplaceholder.typicode.com/todos/")
+    .then((response) => response.json())
+    .then((json) => {
+      todoList.value = json;
+    });
+}
 </script>
 
 <template>
@@ -40,16 +35,35 @@ export default defineNuxtComponent({
         >Unsplash</a
       >
     </p>
-    <h1>Hello Frontend Masters!</h1>
+    <h1 class="heading">Hello Frontend Masters!</h1>
     <button @click="fetchTodoList">Fetch Data</button>
     <p>
       {{ completedItems.length }} completed |
       {{ remainingItems.length }} remaining
     </p>
-    <ul>
+    <ul class="list">
       <li v-for="todo in todoList" :key="`todo-id-${todo.id}`">
         <input type="checkbox" :checked="todo.completed" /> {{ todo.title }}
       </li>
     </ul>
   </div>
 </template>
+
+<style lang="scss">
+@import "./node_modules/bulma/bulma.scss";
+@import "./assets/styles/main.scss";
+
+:root {
+  --text-color: #{$textColor};
+}
+
+.heading {
+  color: var(--text-color);
+}
+
+.list {
+  color: var(--text-color);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+</style>
